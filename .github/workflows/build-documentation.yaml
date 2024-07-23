@@ -1,0 +1,31 @@
+name: Build documentation
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, release-documentation]
+    tags:
+        - 'v*'
+  release:
+    types: [published]
+  pull_request:
+    branches: [master]
+    types: [ready_for_review, opened, synchronize, reopened]
+    paths:
+      - ./Docs/**
+
+jobs:
+  build-and-release:
+    strategy:
+      matrix:
+        flavour: [debian11, centos_stream9]
+        platform: [linux/amd64]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Compile LaTeX
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: | 
+            Docs/UserGuide/userguide.tex
